@@ -45,7 +45,7 @@ int main(int argc, char**argv)
 
 	while((nb = fread(sendbuf, 1, maxdgram, fp)) > 0){
 		sendto(sockfd, sendbuf, nb, 0, ADDRP, ADDRSZ);
-		usleep(usecs);
+		usecs==0 || usleep(usecs);
 	}
 	return 0;
 }
