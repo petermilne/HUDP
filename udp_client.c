@@ -1,7 +1,22 @@
+/* udp_client.c:
+ * send a file as as series of fixed size UDP datagrams at specified interval
+ *
+ * udpclient <IP address> <port> <sz> <file> <usecs>
+ *
+ * <file>=data set samples at fixed interval ('-' :: use stdin)
+ * <sz>=sample size
+ * <usecs> interval
+ *
+ * eg this runs nicely at 20kHz
+ * ./udp_client 10.12.198.128 53676 128 shot_data 50
+ *
+ */
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <strings.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include <arpa/inet.h>
@@ -54,8 +69,12 @@ int main(int argc, char**argv)
    	servaddr.sin_addr.s_addr=inet_addr(argv[1]);
    	servaddr.sin_port=htons(atoi(argv[2]));
 	maxdgram = atoi(argv[3]);
-	fp = fopen(argv[4], "r");
-	assert(fp);
+	if (strcmp(argv[4], "-") == 0){
+		fp = stdin;
+	}else{
+		fp = fopen(argv[4], "r");
+		assert(fp);
+	}
 	timer.it_value.tv_usec = timer.it_interval.tv_usec = atoi(argv[5]);
 
 	if (setitimer(ITIMER_REAL, &timer, 0) < 0) {
